@@ -23,7 +23,7 @@ function Landing() {
   const navigate = useNavigate();
   const [destination, setDestination] = useState("Jaipur");
   const [days, setDays] = useState(5);
-  const [budget, setBudget] = useState(25000);
+  const [budget, setBudget] = useState(5000);
   const [style, setStyle] = useState("Cultural");
   const [loading, setLoading] = useState(false);
 
@@ -113,11 +113,11 @@ function Landing() {
                   className="input"
                 />
               </Field>
-              <Field label="Budget (₹)">
+              <Field label="Budget per day (₹)">
                 <input
-                  type="number" min={1000} step={500}
+                  type="number" min={500} step={250}
                   value={budget}
-                  onChange={(e) => setBudget(Math.max(1000, Number(e.target.value) || 0))}
+                  onChange={(e) => setBudget(Math.max(500, Number(e.target.value) || 0))}
                   className="input"
                 />
               </Field>
@@ -145,7 +145,7 @@ function Landing() {
               {loading ? (
                 <><Wand2 className="h-5 w-5 animate-pulse" /> Crafting your journey…</>
               ) : (
-                <><Sparkles className="h-5 w-5" /> Generate Itinerary</>
+                <><Sparkles className="h-5 w-5" /> Plan My Trip</>
               )}
             </button>
           </form>

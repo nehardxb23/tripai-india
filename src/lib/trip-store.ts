@@ -11,11 +11,14 @@ export type DayPlan = {
   morning: string;
   afternoon: string;
   evening: string;
-  food: string;
+  breakfast: string;
+  lunch: string;
+  dinner: string;
   transport: string;
   budget: string;
   tips: string;
 };
+
 
 export type Trip = {
   input: TripInput;
@@ -60,15 +63,31 @@ const STYLE_FLAVORS: Record<string, { morning: string; afternoon: string; evenin
   },
 };
 
-const FOODS = [
-  "Masala dosa with coconut chutney",
-  "Butter chicken with garlic naan",
-  "Rogan josh with saffron rice",
-  "Pav bhaji from a beachside stall",
+const BREAKFASTS = [
+  "Masala dosa with filter coffee",
+  "Poha and jalebi at a corner stall",
+  "Aloo paratha with fresh curd",
+  "Idli-vada with sambar",
+  "Puri bhaji and masala chai",
+  "Chole bhature with lassi",
+];
+
+const LUNCHES = [
+  "Traditional thali at a family-run kitchen",
   "Hyderabadi biryani with mirchi ka salan",
-  "Bengali fish curry with steamed rice",
-  "Goan vindaloo and feni cocktail",
   "Rajasthani dal baati churma",
+  "Bengali fish curry with steamed rice",
+  "Goan vindaloo with poi bread",
+  "Kerala sadya on a banana leaf",
+];
+
+const DINNERS = [
+  "Butter chicken with garlic naan",
+  "Rogan josh with saffron pulao",
+  "Rooftop tandoori platter under the stars",
+  "Chettinad chicken with parotta",
+  "Home-cooked kadhi chawal by a local host",
+  "Malvani seafood spread by the beach",
 ];
 
 const TIPS = [
@@ -84,7 +103,8 @@ const TRANSPORTS = ["Auto-rickshaw + metro", "Prepaid taxi", "Local train", "Ren
 
 export function generateTrip(input: TripInput): Trip {
   const flavor = STYLE_FLAVORS[input.style] ?? STYLE_FLAVORS.Cultural;
-  const perDay = Math.round(input.budget / Math.max(1, input.days));
+  const perDay = input.budget; // budget is per-day
+  const total = perDay * input.days;
 
   const days: DayPlan[] = Array.from({ length: input.days }, (_, i) => ({
     day: i + 1,
@@ -92,7 +112,9 @@ export function generateTrip(input: TripInput): Trip {
     morning: flavor.morning,
     afternoon: flavor.afternoon,
     evening: flavor.evening,
-    food: FOODS[(i * 3) % FOODS.length],
+    breakfast: BREAKFASTS[i % BREAKFASTS.length],
+    lunch: LUNCHES[i % LUNCHES.length],
+    dinner: DINNERS[i % DINNERS.length],
     transport: TRANSPORTS[i % TRANSPORTS.length],
     budget: `₹${perDay.toLocaleString("en-IN")}`,
     tips: TIPS[i % TIPS.length],
@@ -112,15 +134,16 @@ export function generateTrip(input: TripInput): Trip {
   const weather = `${input.destination} is generally warm this season — expect 22–34°C. Pack light layers for early mornings and a light rain jacket if monsoon-adjacent.`;
 
   const budgetSummary = [
-    { label: "Stay", amount: Math.round(input.budget * 0.4) },
-    { label: "Food", amount: Math.round(input.budget * 0.2) },
-    { label: "Transport", amount: Math.round(input.budget * 0.2) },
-    { label: "Experiences", amount: Math.round(input.budget * 0.15) },
-    { label: "Buffer", amount: Math.round(input.budget * 0.05) },
+    { label: "Stay", amount: Math.round(total * 0.4) },
+    { label: "Food", amount: Math.round(total * 0.2) },
+    { label: "Transport", amount: Math.round(total * 0.2) },
+    { label: "Experiences", amount: Math.round(total * 0.15) },
+    { label: "Buffer", amount: Math.round(total * 0.05) },
   ];
 
   return { input, days, packing, weather, budgetSummary };
 }
+
 
 export function saveTrip(trip: Trip) {
   if (typeof window === "undefined") return;

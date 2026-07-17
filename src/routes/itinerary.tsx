@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Sunrise, Sun, Moon, Utensils, Bus, Wallet, Lightbulb,
-  Download, Bookmark, Check, ArrowLeft, CloudSun, Package
+  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { Nav } from "@/components/Nav";
@@ -54,7 +54,9 @@ function Itinerary() {
       line(`Morning: ${d.morning}`);
       line(`Afternoon: ${d.afternoon}`);
       line(`Evening: ${d.evening}`);
-      line(`Local food: ${d.food}`);
+      line(`Breakfast: ${d.breakfast}`);
+      line(`Lunch: ${d.lunch}`);
+      line(`Dinner: ${d.dinner}`);
       line(`Transport: ${d.transport}`);
       line(`Budget: ${d.budget}`);
       line(`Tip: ${d.tips}`);
@@ -79,7 +81,7 @@ function Itinerary() {
               <div className="text-sm font-semibold uppercase tracking-wider text-primary mb-2">Your itinerary</div>
               <h1 className="font-display font-extrabold text-4xl md:text-5xl tracking-tight">{trip.input.destination}</h1>
               <p className="mt-3 text-muted-foreground text-lg">
-                {trip.input.days} days · ₹{trip.input.budget.toLocaleString("en-IN")} · {trip.input.style}
+                {trip.input.days} days · ₹{trip.input.budget.toLocaleString("en-IN")}/day · {trip.input.style}
               </p>
             </div>
           </header>
@@ -109,15 +111,20 @@ function Itinerary() {
                     <Slot icon={Moon} label="Evening" text={d.evening} tint="bg-indigo-100/60 text-indigo-700" />
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-3 pt-6 border-t border-border">
-                    <MetaRow icon={Utensils} label="Local food" value={d.food} />
+                  <div className="grid sm:grid-cols-3 gap-3 mb-4">
+                    <MetaRow icon={Utensils} label="Breakfast" value={d.breakfast} />
+                    <MetaRow icon={Utensils} label="Lunch" value={d.lunch} />
+                    <MetaRow icon={Utensils} label="Dinner" value={d.dinner} />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-3 pt-4 border-t border-border">
                     <MetaRow icon={Bus} label="Transport" value={d.transport} />
-                    <MetaRow icon={Wallet} label="Budget" value={d.budget} />
-                    <MetaRow icon={Lightbulb} label="Tip" value={d.tips} />
+                    <MetaRow icon={Wallet} label="Daily cost" value={d.budget} />
+                    <MetaRow icon={Lightbulb} label="Local tip" value={d.tips} />
                   </div>
                 </article>
               ))}
             </div>
+
 
             {/* Sidebar */}
             <aside className="space-y-6 lg:sticky lg:top-24 self-start">
@@ -178,6 +185,9 @@ function Itinerary() {
                 <button onClick={save} className="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold border border-border bg-surface hover:border-foreground/40 transition-colors">
                   {saved ? <><Check className="h-4 w-4 text-accent" /> Saved!</> : <><Bookmark className="h-4 w-4" /> Save Trip</>}
                 </button>
+                <Link to="/" className="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold border border-border bg-surface hover:border-foreground/40 transition-colors">
+                  <Sparkles className="h-4 w-4" /> Generate Again
+                </Link>
               </div>
             </aside>
           </div>
