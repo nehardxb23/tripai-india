@@ -24,22 +24,35 @@ const FEATURES = [
 
 function Landing() {
   const navigate = useNavigate();
+  const callGenerate = useServerFn(generateTripFn);
   const [destination, setDestination] = useState("Jaipur");
   const [days, setDays] = useState(5);
   const [budget, setBudget] = useState(5000);
   const [style, setStyle] = useState("Cultural");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onGenerate = (e: React.FormEvent) => {
+  const onGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!destination.trim()) return;
     setLoading(true);
-    setTimeout(() => {
-      const trip = generateTrip({ destination: destination.trim(), days, budget, style });
+    setError(null);
+    try {
+      const input = { destination: destination.trim(), days, budget, style };
+      const api = await callGenerate({
+        data: { destination: input.destination, days, budget, travelStyle: style },
+      });
+      const trip = tripFromApi(input, api);
       saveTrip(trip);
       navigate({ to: "/itinerary" });
-    }, 700);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Failed to generate itinerary");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen">
