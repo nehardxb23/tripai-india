@@ -76,8 +76,8 @@ const responseSchema = {
 export const generateTripFn = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }): Promise<GenerateTripResult> => {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("GEMINI_API_KEY is not configured");
+    const apiKey = process.env.LOVABLE_API_KEY;
+    if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured");
 
     const { destination, days, budget, travelStyle } = data;
     const totalBudget = budget * days;
@@ -99,39 +99,39 @@ Requirements:
 - "budget": realistic split (hotel, food, transport, activities, total) as rupee strings that roughly sum to ₹${totalBudget}.
 - "tripSummary": 2-3 sentences capturing the vibe of the trip.
 
-Return ONLY the JSON matching the provided schema. No prose, no markdown.`;
+Return ONLY the JSON object, no prose, no markdown.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-    const res = await fetch(url, {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        "Lovable-API-Key": apiKey,
+      },
       body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema,
-          temperature: 0.9,
-        },
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+        temperature: 0.9,
       }),
     });
 
     if (!res.ok) {
       const body = await res.text();
-      console.error("Gemini API failed", res.status, body);
-      throw new Error(`Gemini API failed [${res.status}]`);
+      console.error("AI Gateway failed", res.status, body);
+      if (res.status === 429) throw new Error("Rate limit reached. Please try again in a moment.");
+      if (res.status === 402) throw new Error("AI credits exhausted. Please add credits to continue.");
+      throw new Error(`AI Gateway failed [${res.status}]`);
     }
 
     const json = await res.json() as {
-      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+      choices?: Array<{ message?: { content?: string } }>;
     };
-    const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error("Gemini returned no content");
+    const text = json.choices?.[0]?.message?.content;
+    if (!text) throw new Error("AI returned no content");
 
-    let parsed: GenerateTripResult;
     try {
-      parsed = JSON.parse(text) as GenerateTripResult;
+      return JSON.parse(text) as GenerateTripResult;
     } catch {
-      throw new Error("Gemini returned invalid JSON");
+      throw new Error("AI returned invalid JSON");
     }
-    return parsed;
   });
