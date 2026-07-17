@@ -145,6 +145,48 @@ export function generateTrip(input: TripInput): Trip {
 }
 
 
+import type { GenerateTripResult } from "./generate-trip.functions";
+
+function parseRupees(s: string): number {
+  const n = Number((s || "").replace(/[^0-9.]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+export function tripFromApi(input: TripInput, api: GenerateTripResult): Trip {
+  const days: DayPlan[] = api.days.map((d, i) => ({
+    day: d.day ?? i + 1,
+    title: i === 0
+      ? `Arrive in ${input.destination}`
+      : i === api.days.length - 1
+      ? `Farewell to ${input.destination}`
+      : `Discover ${input.destination}`,
+    morning: d.morning,
+    afternoon: d.afternoon,
+    evening: d.evening,
+    breakfast: d.breakfast,
+    lunch: d.lunch,
+    dinner: d.dinner,
+    transport: d.transport,
+    budget: d.estimatedCost,
+    tips: d.tip,
+  }));
+
+  const budgetSummary = [
+    { label: "Hotel", amount: parseRupees(api.budget.hotel) },
+    { label: "Food", amount: parseRupees(api.budget.food) },
+    { label: "Transport", amount: parseRupees(api.budget.transport) },
+    { label: "Activities", amount: parseRupees(api.budget.activities) },
+  ];
+
+  return {
+    input,
+    days,
+    packing: api.packing,
+    weather: api.tripSummary,
+    budgetSummary,
+  };
+}
+
 export function saveTrip(trip: Trip) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(trip));
@@ -156,3 +198,4 @@ export function loadTrip(): Trip | null {
   if (!raw) return null;
   try { return JSON.parse(raw) as Trip; } catch { return null; }
 }
+

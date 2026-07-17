@@ -1,13 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-india.jpg";
 import { Nav } from "@/components/Nav";
-import { generateTrip, saveTrip } from "@/lib/trip-store";
+import { tripFromApi, saveTrip } from "@/lib/trip-store";
+import { generateTripFn } from "@/lib/generate-trip.functions";
 
 export const Route = createFileRoute("/")({
   component: Landing,
 });
+
 
 const STYLES = ["Adventure", "Cultural", "Foodie", "Relaxation", "Luxury", "Backpacker"];
 
@@ -21,22 +24,35 @@ const FEATURES = [
 
 function Landing() {
   const navigate = useNavigate();
+  const callGenerate = useServerFn(generateTripFn);
   const [destination, setDestination] = useState("Jaipur");
   const [days, setDays] = useState(5);
   const [budget, setBudget] = useState(5000);
   const [style, setStyle] = useState("Cultural");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onGenerate = (e: React.FormEvent) => {
+  const onGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!destination.trim()) return;
     setLoading(true);
-    setTimeout(() => {
-      const trip = generateTrip({ destination: destination.trim(), days, budget, style });
+    setError(null);
+    try {
+      const input = { destination: destination.trim(), days, budget, style };
+      const api = await callGenerate({
+        data: { destination: input.destination, days, budget, travelStyle: style },
+      });
+      const trip = tripFromApi(input, api);
       saveTrip(trip);
       navigate({ to: "/itinerary" });
-    }, 700);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Failed to generate itinerary");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen">
@@ -148,7 +164,11 @@ function Landing() {
                 <><Sparkles className="h-5 w-5" /> Plan My Trip</>
               )}
             </button>
+            {error && (
+              <p className="mt-4 text-sm text-center text-red-600">{error}</p>
+            )}
           </form>
+
         </div>
       </section>
 
