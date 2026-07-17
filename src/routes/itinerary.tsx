@@ -111,15 +111,20 @@ function Itinerary() {
                     <Slot icon={Moon} label="Evening" text={d.evening} tint="bg-indigo-100/60 text-indigo-700" />
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-3 pt-6 border-t border-border">
-                    <MetaRow icon={Utensils} label="Local food" value={d.food} />
+                  <div className="grid sm:grid-cols-3 gap-3 mb-4">
+                    <MetaRow icon={Utensils} label="Breakfast" value={d.breakfast} />
+                    <MetaRow icon={Utensils} label="Lunch" value={d.lunch} />
+                    <MetaRow icon={Utensils} label="Dinner" value={d.dinner} />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-3 pt-4 border-t border-border">
                     <MetaRow icon={Bus} label="Transport" value={d.transport} />
-                    <MetaRow icon={Wallet} label="Budget" value={d.budget} />
-                    <MetaRow icon={Lightbulb} label="Tip" value={d.tips} />
+                    <MetaRow icon={Wallet} label="Daily cost" value={d.budget} />
+                    <MetaRow icon={Lightbulb} label="Local tip" value={d.tips} />
                   </div>
                 </article>
               ))}
             </div>
+
 
             {/* Sidebar */}
             <aside className="space-y-6 lg:sticky lg:top-24 self-start">
