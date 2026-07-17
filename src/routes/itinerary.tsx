@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Sunrise, Sun, Moon, Utensils, Bus, Wallet, Lightbulb,
-  Download, Bookmark, Check, ArrowLeft, CloudSun, Package
+  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { Nav } from "@/components/Nav";
