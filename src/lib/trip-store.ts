@@ -11,11 +11,14 @@ export type DayPlan = {
   morning: string;
   afternoon: string;
   evening: string;
-  food: string;
+  breakfast: string;
+  lunch: string;
+  dinner: string;
   transport: string;
   budget: string;
   tips: string;
 };
+
 
 export type Trip = {
   input: TripInput;
