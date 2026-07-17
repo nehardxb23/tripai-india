@@ -81,7 +81,7 @@ function Itinerary() {
               <div className="text-sm font-semibold uppercase tracking-wider text-primary mb-2">Your itinerary</div>
               <h1 className="font-display font-extrabold text-4xl md:text-5xl tracking-tight">{trip.input.destination}</h1>
               <p className="mt-3 text-muted-foreground text-lg">
-                {trip.input.days} days · ₹{trip.input.budget.toLocaleString("en-IN")} · {trip.input.style}
+                {trip.input.days} days · ₹{trip.input.budget.toLocaleString("en-IN")}/day · {trip.input.style}
               </p>
             </div>
           </header>
