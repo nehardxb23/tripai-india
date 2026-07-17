@@ -153,36 +153,40 @@ function parseRupees(s: string): number {
 }
 
 export function tripFromApi(input: TripInput, api: GenerateTripResult): Trip {
-  const days: DayPlan[] = api.days.map((d, i) => ({
-    day: d.day ?? i + 1,
+  const apiDays = Array.isArray(api?.days) ? api.days : [];
+  const apiPacking = Array.isArray(api?.packing) ? api.packing : [];
+  const apiBudget = api?.budget ?? { hotel: "", food: "", transport: "", activities: "", total: "" };
+
+  const days: DayPlan[] = apiDays.map((d, i) => ({
+    day: d?.day ?? i + 1,
     title: i === 0
       ? `Arrive in ${input.destination}`
-      : i === api.days.length - 1
+      : i === apiDays.length - 1
       ? `Farewell to ${input.destination}`
       : `Discover ${input.destination}`,
-    morning: d.morning,
-    afternoon: d.afternoon,
-    evening: d.evening,
-    breakfast: d.breakfast,
-    lunch: d.lunch,
-    dinner: d.dinner,
-    transport: d.transport,
-    budget: d.estimatedCost,
-    tips: d.tip,
+    morning: d?.morning ?? "",
+    afternoon: d?.afternoon ?? "",
+    evening: d?.evening ?? "",
+    breakfast: d?.breakfast ?? "",
+    lunch: d?.lunch ?? "",
+    dinner: d?.dinner ?? "",
+    transport: d?.transport ?? "",
+    budget: d?.estimatedCost ?? "",
+    tips: d?.tip ?? "",
   }));
 
   const budgetSummary = [
-    { label: "Hotel", amount: parseRupees(api.budget.hotel) },
-    { label: "Food", amount: parseRupees(api.budget.food) },
-    { label: "Transport", amount: parseRupees(api.budget.transport) },
-    { label: "Activities", amount: parseRupees(api.budget.activities) },
+    { label: "Hotel", amount: parseRupees(apiBudget.hotel) },
+    { label: "Food", amount: parseRupees(apiBudget.food) },
+    { label: "Transport", amount: parseRupees(apiBudget.transport) },
+    { label: "Activities", amount: parseRupees(apiBudget.activities) },
   ];
 
   return {
     input,
     days,
-    packing: api.packing,
-    weather: api.tripSummary,
+    packing: apiPacking,
+    weather: api?.tripSummary ?? "",
     budgetSummary,
   };
 }
