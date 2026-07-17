@@ -164,7 +164,11 @@ function Landing() {
                 <><Sparkles className="h-5 w-5" /> Plan My Trip</>
               )}
             </button>
+            {error && (
+              <p className="mt-4 text-sm text-center text-red-600">{error}</p>
+            )}
           </form>
+
         </div>
       </section>
 
