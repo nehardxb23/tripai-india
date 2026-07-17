@@ -99,7 +99,7 @@ Requirements:
 - "budget": realistic split (hotel, food, transport, activities, total) as rupee strings that roughly sum to ₹${totalBudget}.
 - "tripSummary": 2-3 sentences capturing the vibe of the trip.
 
-Return ONLY the JSON object, no prose, no markdown.`;
+Return ONLY the JSON object with EXACTLY these top-level keys: "tripSummary" (string), "days" (array — NOT "itinerary"), "packing" (array of strings), "budget" (object). Each item in "days" MUST have flat string fields: day (number), morning, afternoon, evening, breakfast, lunch, dinner, transport, estimatedCost, tip. Do NOT nest breakfast/lunch/transport inside morning/afternoon/evening. No prose, no markdown.`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

@@ -89,6 +89,9 @@ function Itinerary() {
           <div className="grid lg:grid-cols-[1fr_340px] gap-8">
             {/* Days */}
             <div className="space-y-6">
+              {trip.days.length === 0 && (
+                <div className="card-soft p-10 text-center text-muted-foreground">No itinerary generated.</div>
+              )}
               {trip.days.map((d, i) => (
                 <article
                   key={d.day}
