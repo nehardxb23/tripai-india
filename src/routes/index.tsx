@@ -113,11 +113,11 @@ function Landing() {
                   className="input"
                 />
               </Field>
-              <Field label="Budget (₹)">
+              <Field label="Budget per day (₹)">
                 <input
-                  type="number" min={1000} step={500}
+                  type="number" min={500} step={250}
                   value={budget}
-                  onChange={(e) => setBudget(Math.max(1000, Number(e.target.value) || 0))}
+                  onChange={(e) => setBudget(Math.max(500, Number(e.target.value) || 0))}
                   className="input"
                 />
               </Field>
