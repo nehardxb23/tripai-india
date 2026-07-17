@@ -1,13 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-india.jpg";
 import { Nav } from "@/components/Nav";
-import { generateTrip, saveTrip } from "@/lib/trip-store";
+import { tripFromApi, saveTrip } from "@/lib/trip-store";
+import { generateTripFn } from "@/lib/generate-trip.functions";
 
 export const Route = createFileRoute("/")({
   component: Landing,
 });
+
 
 const STYLES = ["Adventure", "Cultural", "Foodie", "Relaxation", "Luxury", "Backpacker"];
 
