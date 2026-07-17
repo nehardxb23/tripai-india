@@ -54,7 +54,9 @@ function Itinerary() {
       line(`Morning: ${d.morning}`);
       line(`Afternoon: ${d.afternoon}`);
       line(`Evening: ${d.evening}`);
-      line(`Local food: ${d.food}`);
+      line(`Breakfast: ${d.breakfast}`);
+      line(`Lunch: ${d.lunch}`);
+      line(`Dinner: ${d.dinner}`);
       line(`Transport: ${d.transport}`);
       line(`Budget: ${d.budget}`);
       line(`Tip: ${d.tips}`);
