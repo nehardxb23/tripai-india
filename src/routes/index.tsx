@@ -145,7 +145,7 @@ function Landing() {
               {loading ? (
                 <><Wand2 className="h-5 w-5 animate-pulse" /> Crafting your journey…</>
               ) : (
-                <><Sparkles className="h-5 w-5" /> Generate Itinerary</>
+                <><Sparkles className="h-5 w-5" /> Plan My Trip</>
               )}
             </button>
           </form>
