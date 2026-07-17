@@ -152,27 +152,52 @@ function parseRupees(s: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-export function tripFromApi(input: TripInput, api: GenerateTripResult): Trip {
-  const apiDays = Array.isArray(api?.days) ? api.days : [];
+export function tripFromApi(input: TripInput, api: any): Trip {
+  // Tolerate shape drift: days may be under `days` or `itinerary`; sub-fields may be flat or nested under morning/afternoon/evening objects.
+  const rawDays: any[] = Array.isArray(api?.days)
+    ? api.days
+    : Array.isArray(api?.itinerary)
+    ? api.itinerary
+    : Array.isArray(api?.itinerary?.days)
+    ? api.itinerary.days
+    : Array.isArray(api?.data?.days)
+    ? api.data.days
+    : [];
   const apiPacking = Array.isArray(api?.packing) ? api.packing : [];
-  const apiBudget = api?.budget ?? { hotel: "", food: "", transport: "", activities: "", total: "" };
+  const apiBudget = api?.budget ?? {};
 
-  const days: DayPlan[] = apiDays.map((d, i) => ({
+  const pick = (d: any, key: string): string => {
+    if (typeof d?.[key] === "string") return d[key];
+    // nested under time-of-day objects
+    for (const slot of ["morning", "afternoon", "evening"]) {
+      const v = d?.[slot];
+      if (v && typeof v === "object" && typeof v[key] === "string") return v[key];
+    }
+    return "";
+  };
+  const slotText = (d: any, slot: "morning" | "afternoon" | "evening"): string => {
+    const v = d?.[slot];
+    if (typeof v === "string") return v;
+    if (v && typeof v === "object") return v.activity ?? v.description ?? v.text ?? "";
+    return "";
+  };
+
+  const days: DayPlan[] = rawDays.map((d, i) => ({
     day: d?.day ?? i + 1,
     title: i === 0
       ? `Arrive in ${input.destination}`
-      : i === apiDays.length - 1
+      : i === rawDays.length - 1
       ? `Farewell to ${input.destination}`
       : `Discover ${input.destination}`,
-    morning: d?.morning ?? "",
-    afternoon: d?.afternoon ?? "",
-    evening: d?.evening ?? "",
-    breakfast: d?.breakfast ?? "",
-    lunch: d?.lunch ?? "",
-    dinner: d?.dinner ?? "",
-    transport: d?.transport ?? "",
-    budget: d?.estimatedCost ?? "",
-    tips: d?.tip ?? "",
+    morning: slotText(d, "morning"),
+    afternoon: slotText(d, "afternoon"),
+    evening: slotText(d, "evening"),
+    breakfast: pick(d, "breakfast"),
+    lunch: pick(d, "lunch"),
+    dinner: pick(d, "dinner"),
+    transport: pick(d, "transport"),
+    budget: pick(d, "estimatedCost") || pick(d, "cost") || pick(d, "budget"),
+    tips: pick(d, "tip") || pick(d, "localTip") || pick(d, "tips"),
   }));
 
   const budgetSummary = [
