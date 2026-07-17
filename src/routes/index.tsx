@@ -23,7 +23,7 @@ function Landing() {
   const navigate = useNavigate();
   const [destination, setDestination] = useState("Jaipur");
   const [days, setDays] = useState(5);
-  const [budget, setBudget] = useState(25000);
+  const [budget, setBudget] = useState(5000);
   const [style, setStyle] = useState("Cultural");
   const [loading, setLoading] = useState(false);
 
