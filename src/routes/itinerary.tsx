@@ -181,26 +181,143 @@ function Itinerary() {
   );
 }
 
-function Slot({ icon: Icon, label, text, tint }: { icon: React.ElementType; label: string; text: string; tint: string }) {
+function TimelineDay({ day, index, isToday }: { day: DayPlan; index: number; isToday: boolean }) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setVisible(true);
+            io.disconnect();
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -80px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className="rounded-2xl border border-border p-4 bg-background/40">
-      <div className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${tint}`}>
-        <Icon className="h-3.5 w-3.5" /> {label}
+    <article
+      ref={ref}
+      className={`relative transition-all duration-700 ease-out ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
+      style={{ transitionDelay: `${index * 60}ms` }}
+    >
+      {/* Timeline node */}
+      <div className="absolute -left-6 md:-left-10 top-6 flex items-center justify-center">
+        <span className="relative grid place-items-center h-10 w-10 rounded-full btn-primary-gradient font-display font-bold text-sm ring-4 ring-background">
+          {day.day}
+          {isToday && (
+            <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping" />
+          )}
+        </span>
       </div>
-      <p className="mt-3 text-sm text-foreground leading-relaxed">{text}</p>
+
+      <div
+        className={`card-soft card-soft-hover p-6 md:p-8 ml-4 md:ml-6 ${
+          isToday
+            ? "ring-2 ring-primary/40 shadow-[var(--shadow-glow)] bg-gradient-to-br from-primary/5 via-surface to-accent/5"
+            : ""
+        }`}
+      >
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-1">
+              <MapPin className="h-3.5 w-3.5" /> Day {day.day}
+              {isToday && (
+                <span className="ml-1 rounded-full bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-bold tracking-wide normal-case">
+                  Today
+                </span>
+              )}
+            </div>
+            <h2 className="font-display font-semibold text-2xl md:text-3xl tracking-tight truncate">
+              {day.title}
+            </h2>
+          </div>
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full glass-card px-3 py-1.5 text-xs font-semibold text-primary">
+            <Wallet className="h-3.5 w-3.5" /> {day.budget}
+          </div>
+        </div>
+
+        {/* Time-of-day slots */}
+        <div className="grid sm:grid-cols-3 gap-4 mb-6">
+          <SlotCard emoji="🌅" icon={Sunrise} label="Morning" text={day.morning} gradient="from-amber-200/50 to-orange-100/30" iconColor="text-amber-600" />
+          <SlotCard emoji="🌞" icon={Sun} label="Afternoon" text={day.afternoon} gradient="from-orange-200/50 to-rose-100/30" iconColor="text-orange-600" />
+          <SlotCard emoji="🌇" icon={Moon} label="Evening" text={day.evening} gradient="from-indigo-200/50 to-violet-100/30" iconColor="text-indigo-600" />
+        </div>
+
+        {/* Meals */}
+        <div className="grid sm:grid-cols-3 gap-3 mb-3">
+          <MealRow emoji="🍳" icon={Coffee} label="Breakfast" value={day.breakfast} />
+          <MealRow emoji="🍛" icon={UtensilsCrossed} label="Lunch" value={day.lunch} />
+          <MealRow emoji="🍽" icon={ChefHat} label="Dinner" value={day.dinner} />
+        </div>
+
+        {/* Meta */}
+        <div className="grid sm:grid-cols-3 gap-3 pt-4 border-t border-border">
+          <MetaTile emoji="🚕" icon={Car} label="Transport" value={day.transport} />
+          <MetaTile emoji="💰" icon={Wallet} label="Estimated cost" value={day.budget} />
+          <MetaTile emoji="💡" icon={Lightbulb} label="Local tip" value={day.tips} accent />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function SlotCard({ emoji, icon: Icon, label, text, gradient, iconColor }: { emoji: string; icon: React.ElementType; label: string; text: string; gradient: string; iconColor: string }) {
+  return (
+    <div className={`relative overflow-hidden rounded-2xl border border-border/60 p-4 bg-gradient-to-br ${gradient}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-lg leading-none" aria-hidden="true">{emoji}</span>
+        <div className={`inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider ${iconColor}`}>
+          <Icon className="h-3.5 w-3.5" /> {label}
+        </div>
+      </div>
+      <p className="text-sm text-foreground leading-relaxed">{text}</p>
     </div>
   );
 }
 
-function MetaRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+function MealRow({ emoji, icon: Icon, label, value }: { emoji: string; icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="grid place-items-center h-9 w-9 rounded-xl bg-muted shrink-0">
-        <Icon className="h-4 w-4 text-muted-foreground" />
+    <div className="flex items-start gap-3 rounded-2xl p-3 bg-surface/60 border border-border/50">
+      <span className="grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 shrink-0 text-base" aria-hidden="true">
+        {emoji}
       </span>
       <div className="min-w-0">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-        <div className="text-sm font-medium text-foreground">{value}</div>
+        <div className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <Icon className="h-3 w-3" /> {label}
+        </div>
+        <div className="text-sm font-medium text-foreground leading-snug">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function MetaTile({ emoji, icon: Icon, label, value, accent }: { emoji: string; icon: React.ElementType; label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span
+        className={`grid place-items-center h-10 w-10 rounded-xl shrink-0 text-base ${
+          accent ? "bg-accent/15" : "bg-muted"
+        }`}
+        aria-hidden="true"
+      >
+        {emoji}
+      </span>
+      <div className="min-w-0">
+        <div className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <Icon className="h-3 w-3" /> {label}
+        </div>
+        <div className="text-sm font-medium text-foreground leading-snug">{value}</div>
       </div>
     </div>
   );
