@@ -23,6 +23,16 @@ export type GenerateTripResult = {
     transport: string;
     estimatedCost: string;
     tip: string;
+    attractions?: Array<{
+      name: string;
+      lat: number;
+      lng: number;
+      description?: string;
+      photoTip?: string;
+      travelTime?: string;
+      waitTime?: string;
+      alternative?: string;
+    }>;
   }>;
   packing: string[];
   budget: {
@@ -32,6 +42,7 @@ export type GenerateTripResult = {
     activities: string;
     total: string;
   };
+  festivals?: string;
 };
 
 const responseSchema = {
@@ -53,6 +64,23 @@ const responseSchema = {
           transport: { type: "STRING" },
           estimatedCost: { type: "STRING" },
           tip: { type: "STRING" },
+          attractions: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                name: { type: "STRING" },
+                lat: { type: "NUMBER" },
+                lng: { type: "NUMBER" },
+                description: { type: "STRING" },
+                photoTip: { type: "STRING" },
+                travelTime: { type: "STRING" },
+                waitTime: { type: "STRING" },
+                alternative: { type: "STRING" },
+              },
+              required: ["name", "lat", "lng"],
+            },
+          },
         },
         required: ["day", "morning", "afternoon", "evening", "breakfast", "lunch", "dinner", "transport", "estimatedCost", "tip"],
       },
@@ -69,6 +97,7 @@ const responseSchema = {
       },
       required: ["hotel", "food", "transport", "activities", "total"],
     },
+    festivals: { type: "STRING" },
   },
   required: ["tripSummary", "days", "packing", "budget"],
 };
@@ -82,24 +111,35 @@ export const generateTripFn = createServerFn({ method: "POST" })
     const { destination, days, budget, travelStyle } = data;
     const totalBudget = budget * days;
 
-    const prompt = `You are an expert India travel planner. Create a detailed, authentic ${days}-day itinerary for ${destination}, India.
+    const prompt = `You are a seasoned local guide and India travel planner. Craft a detailed, authentic ${days}-day itinerary for ${destination}, India.
 
-Traveler preferences:
-- Travel style: ${travelStyle}
-- Budget: ₹${budget} per day (₹${totalBudget} total for ${days} days), in Indian Rupees
+Traveler:
+- Style: ${travelStyle}
+- Budget: ₹${budget}/day (₹${totalBudget} total)
 
-Requirements:
-- Provide exactly ${days} day entries, numbered 1..${days}.
-- For each day: morning, afternoon, and evening activities with specific place names in ${destination}.
-- Recommend authentic local breakfast, lunch, and dinner dishes/venues.
-- Suggest realistic transport for that day.
-- Give an "estimatedCost" as a rupee string like "₹4,500".
-- Include one insider local tip per day.
-- "packing": 6-10 practical items tailored to ${destination} and ${travelStyle}.
-- "budget": realistic split (hotel, food, transport, activities, total) as rupee strings that roughly sum to ₹${totalBudget}.
-- "tripSummary": 2-3 sentences capturing the vibe of the trip.
+Quality bar (very important):
+- AVOID over-touristed traps and generic top-10 lists. Prefer places locals actually love.
+- Weave in HIDDEN GEMS: quiet viewpoints, neighborhood temples, artisan lanes, family-run kitchens.
+- Recommend LOCAL CAFES and independent coffee/chai spots by name.
+- Use REALISTIC travel times between places (e.g. "20 min auto"), and estimate WAITING/queue times where relevant.
+- Suggest a graceful ALTERNATIVE for each key attraction in case it's closed, crowded, or the weather turns.
+- Point out the best PHOTOGRAPHY spots and the ideal time of day for them.
+- Mention any LOCAL FESTIVALS, markets or seasonal events that overlap the trip (in the top-level "festivals" field), or a short note explaining none coincide.
+- Space activities so days feel unhurried and human, not a checklist.
 
-Return ONLY the JSON object with EXACTLY these top-level keys: "tripSummary" (string), "days" (array — NOT "itinerary"), "packing" (array of strings), "budget" (object). Each item in "days" MUST have flat string fields: day (number), morning, afternoon, evening, breakfast, lunch, dinner, transport, estimatedCost, tip. Do NOT nest breakfast/lunch/transport inside morning/afternoon/evening. No prose, no markdown.`;
+Structure:
+- Exactly ${days} entries in "days", numbered 1..${days}.
+- Each day: morning / afternoon / evening activities naming SPECIFIC places in ${destination}.
+- Each day: authentic breakfast, lunch, dinner (dish + venue).
+- Each day: realistic transport summary and estimatedCost as "₹4,500".
+- Each day: one insider "tip" no guidebook would print.
+- Each day: 2-4 "attractions" with real, accurate lat/lng coordinates within ${destination} (WGS84 decimal degrees). Include short description, photoTip, travelTime from the previous stop, expected waitTime, and an alternative option.
+- "packing": 6-10 items tailored to ${destination} and ${travelStyle}.
+- "budget": realistic split summing to ~₹${totalBudget} (hotel, food, transport, activities, total) as rupee strings.
+- "tripSummary": 2-3 sentences capturing the vibe.
+- "festivals": short paragraph on local festivals/events during typical travel windows, or "No major festivals during standard travel windows."
+
+Return ONLY the JSON object with EXACTLY these top-level keys: "tripSummary", "days", "packing", "budget", "festivals". Each item in "days" MUST have flat string fields plus the "attractions" array. Do NOT nest breakfast/lunch/transport inside morning/afternoon/evening. No prose, no markdown.`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
