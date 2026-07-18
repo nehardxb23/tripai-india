@@ -301,6 +301,20 @@ function TimelineDay({ day, index, isToday }: { day: DayPlan; index: number; isT
           <SlotCard emoji="🌇" icon={Moon} label="Evening" text={day.evening} gradient="from-indigo-200/50 to-violet-100/30" iconColor="text-indigo-600" />
         </div>
 
+        {/* Attractions */}
+        {day.attractions.length > 0 && (
+          <div className="mb-4 rounded-2xl border border-border/60 bg-surface/60 p-4">
+            <div className="flex items-center gap-2 mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Compass className="h-3.5 w-3.5 text-primary" /> Places on this day
+            </div>
+            <ul className="space-y-3">
+              {day.attractions.map((a, i) => (
+                <AttractionRow key={`${a.name}-${i}`} a={a} n={i + 1} />
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Meals */}
         <div className="grid sm:grid-cols-3 gap-3 mb-3">
           <MealRow emoji="🍳" icon={Coffee} label="Breakfast" value={day.breakfast} />
