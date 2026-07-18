@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight } from "lucide-react";
+import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight, Plane, Compass, Palmtree, Mountain, Camera, Globe2 } from "lucide-react";
 import heroImg from "@/assets/hero-india.jpg";
 import { Nav } from "@/components/Nav";
 import { tripFromApi, saveTrip } from "@/lib/trip-store";
