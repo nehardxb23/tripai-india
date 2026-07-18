@@ -86,7 +86,12 @@ function Itinerary() {
             <ArrowLeft className="h-4 w-4" /> Back
           </Link>
 
-          <header className="flex flex-wrap items-end justify-between gap-6 mb-10 animate-fade-in-up">
+          {/* Photo carousel */}
+          <div className="mb-8 animate-fade-in">
+            <PhotoCarousel destination={trip.input.destination} />
+          </div>
+
+          <header className="flex flex-wrap items-end justify-between gap-6 mb-8 animate-fade-in-up">
             <div>
               <div className="text-sm font-semibold uppercase tracking-wider text-primary mb-2">Your itinerary</div>
               <h1 className="font-display font-extrabold text-4xl md:text-5xl tracking-tight">{trip.input.destination}</h1>
@@ -95,6 +100,31 @@ function Itinerary() {
               </p>
             </div>
           </header>
+
+          {/* Analytics */}
+          <div className="mb-8 animate-fade-in-up">
+            <AnalyticsCards items={trip.budgetSummary} />
+          </div>
+
+          {/* Interactive map */}
+          <section className="mb-10 animate-fade-in-up">
+            <div className="flex items-center gap-2 mb-4">
+              <MapIcon className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-2xl tracking-tight">Trip map</h2>
+              <span className="text-sm text-muted-foreground ml-2">Markers, routes & popup notes</span>
+            </div>
+            <div className="card-soft overflow-hidden p-0 h-[420px]">
+              <ClientOnly
+                fallback={
+                  <div className="skeleton h-full w-full" />
+                }
+              >
+                <Suspense fallback={<div className="skeleton h-full w-full" />}>
+                  <TripMap days={trip.days} />
+                </Suspense>
+              </ClientOnly>
+            </div>
+          </section>
 
           <div className="grid lg:grid-cols-[1fr_340px] gap-8">
             {/* Timeline */}
