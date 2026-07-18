@@ -196,23 +196,40 @@ export function tripFromApi(input: TripInput, api: any): Trip {
     return "";
   };
 
-  const days: DayPlan[] = rawDays.map((d, i) => ({
-    day: d?.day ?? i + 1,
-    title: i === 0
-      ? `Arrive in ${input.destination}`
-      : i === rawDays.length - 1
-      ? `Farewell to ${input.destination}`
-      : `Discover ${input.destination}`,
-    morning: slotText(d, "morning"),
-    afternoon: slotText(d, "afternoon"),
-    evening: slotText(d, "evening"),
-    breakfast: pick(d, "breakfast"),
-    lunch: pick(d, "lunch"),
-    dinner: pick(d, "dinner"),
-    transport: pick(d, "transport"),
-    budget: pick(d, "estimatedCost") || pick(d, "cost") || pick(d, "budget"),
-    tips: pick(d, "tip") || pick(d, "localTip") || pick(d, "tips"),
-  }));
+  const days: DayPlan[] = rawDays.map((d, i) => {
+    const rawAttractions = Array.isArray(d?.attractions) ? d.attractions : [];
+    const attractions: Attraction[] = rawAttractions
+      .map((a: any) => ({
+        name: typeof a?.name === "string" ? a.name : "",
+        lat: Number(a?.lat),
+        lng: Number(a?.lng ?? a?.lon ?? a?.lng),
+        description: typeof a?.description === "string" ? a.description : "",
+        photoTip: typeof a?.photoTip === "string" ? a.photoTip : "",
+        travelTime: typeof a?.travelTime === "string" ? a.travelTime : "",
+        waitTime: typeof a?.waitTime === "string" ? a.waitTime : "",
+        alternative: typeof a?.alternative === "string" ? a.alternative : "",
+      }))
+      .filter((a: Attraction) => a.name && Number.isFinite(a.lat) && Number.isFinite(a.lng));
+
+    return {
+      day: d?.day ?? i + 1,
+      title: i === 0
+        ? `Arrive in ${input.destination}`
+        : i === rawDays.length - 1
+        ? `Farewell to ${input.destination}`
+        : `Discover ${input.destination}`,
+      morning: slotText(d, "morning"),
+      afternoon: slotText(d, "afternoon"),
+      evening: slotText(d, "evening"),
+      breakfast: pick(d, "breakfast"),
+      lunch: pick(d, "lunch"),
+      dinner: pick(d, "dinner"),
+      transport: pick(d, "transport"),
+      budget: pick(d, "estimatedCost") || pick(d, "cost") || pick(d, "budget"),
+      tips: pick(d, "tip") || pick(d, "localTip") || pick(d, "tips"),
+      attractions,
+    };
+  });
 
   const budgetSummary = [
     { label: "Hotel", amount: parseRupees(apiBudget.hotel) },
@@ -226,6 +243,7 @@ export function tripFromApi(input: TripInput, api: any): Trip {
     days,
     packing: apiPacking,
     weather: api?.tripSummary ?? "",
+    festivals: typeof api?.festivals === "string" ? api.festivals : "",
     budgetSummary,
   };
 }
