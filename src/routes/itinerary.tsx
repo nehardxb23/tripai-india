@@ -1,12 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { ClientOnly } from "@tanstack/react-router";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Sunrise, Sun, Moon, Coffee, UtensilsCrossed, ChefHat, Car, Wallet, Lightbulb,
-  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin
+  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin,
+  Map as MapIcon, PartyPopper, Camera, Clock, Compass
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { Nav } from "@/components/Nav";
-import { loadTrip, type Trip, type DayPlan } from "@/lib/trip-store";
+import { PhotoCarousel } from "@/components/PhotoCarousel";
+import { AnalyticsCards } from "@/components/AnalyticsCards";
+import { loadTrip, type Trip, type DayPlan, type Attraction } from "@/lib/trip-store";
+
+// Leaflet touches window at import time — lazy-load behind ClientOnly.
+const TripMap = lazy(() => import("@/components/TripMap"));
 
 export const Route = createFileRoute("/itinerary")({
   head: () => ({
