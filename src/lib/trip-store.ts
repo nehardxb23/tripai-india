@@ -131,6 +131,7 @@ export function generateTrip(input: TripInput): Trip {
     transport: TRANSPORTS[i % TRANSPORTS.length],
     budget: `₹${perDay.toLocaleString("en-IN")}`,
     tips: TIPS[i % TIPS.length],
+    attractions: [],
   }));
 
   const packing = [
