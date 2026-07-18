@@ -199,6 +199,16 @@ function Itinerary() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{trip.weather}</p>
               </div>
 
+              {trip.festivals && (
+                <div className="card-soft p-6 bg-gradient-to-br from-accent/10 to-transparent">
+                  <div className="flex items-center gap-2 mb-3">
+                    <PartyPopper className="h-5 w-5 text-accent-foreground" />
+                    <h3 className="font-display font-semibold text-lg">Local festivals</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{trip.festivals}</p>
+                </div>
+              )}
+
               <div className="space-y-3">
                 <button onClick={downloadPDF} className="btn-primary-gradient w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold">
                   <Download className="h-4 w-4" /> Download PDF
