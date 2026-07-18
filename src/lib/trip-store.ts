@@ -5,6 +5,17 @@ export type TripInput = {
   style: string;
 };
 
+export type Attraction = {
+  name: string;
+  lat: number;
+  lng: number;
+  description?: string;
+  photoTip?: string;
+  travelTime?: string;
+  waitTime?: string;
+  alternative?: string;
+};
+
 export type DayPlan = {
   day: number;
   title: string;
@@ -17,6 +28,7 @@ export type DayPlan = {
   transport: string;
   budget: string;
   tips: string;
+  attractions: Attraction[];
 };
 
 
@@ -25,6 +37,7 @@ export type Trip = {
   days: DayPlan[];
   packing: string[];
   weather: string;
+  festivals?: string;
   budgetSummary: { label: string; amount: number }[];
 };
 
