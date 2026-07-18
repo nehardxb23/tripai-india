@@ -231,3 +231,47 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
+
+function FloatingIcon({ icon: Icon, className, delay }: { icon: React.ElementType; className?: string; delay?: string }) {
+  return (
+    <div
+      className={`absolute pointer-events-none animate-float ${className ?? ""}`}
+      style={{ animationDelay: delay }}
+      aria-hidden="true"
+    >
+      <div className="grid place-items-center h-12 w-12 rounded-2xl glass-card">
+        <Icon className="h-6 w-6" strokeWidth={2} />
+      </div>
+    </div>
+  );
+}
+
+function LoadingOverlay({ destination }: { destination: string }) {
+  return (
+    <div className="fixed inset-0 z-[100] grid place-items-center bg-background/80 backdrop-blur-xl animate-fade-in">
+      <div className="text-center px-6 max-w-md">
+        <div className="relative grid place-items-center mx-auto h-24 w-24 mb-8">
+          <span className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+          <span className="absolute inset-2 rounded-full bg-primary/30" />
+          <span className="relative grid place-items-center h-16 w-16 rounded-full btn-primary-gradient animate-spin-slow">
+            <Compass className="h-8 w-8" strokeWidth={2.5} />
+          </span>
+        </div>
+        <h2 className="font-display font-bold text-2xl md:text-3xl mb-3 tracking-tight">
+          Crafting your journey to {destination || "India"}
+        </h2>
+        <p className="text-muted-foreground mb-8">
+          Our AI is picking hidden gems, local food and the perfect day-by-day flow…
+        </p>
+        <div className="space-y-3 text-left">
+          {["Finding hidden gems", "Planning meals", "Balancing your budget"].map((s, i) => (
+            <div key={s} className="glass-card p-4 flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: `${i * 200}ms` }}>
+              <div className="h-3 w-3 rounded-full bg-gradient-to-r from-primary to-primary-glow animate-pulse" />
+              <span className="text-sm font-medium">{s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
