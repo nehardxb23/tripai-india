@@ -21,15 +21,18 @@ export const Route = createFileRoute("/itinerary")({
 function Itinerary() {
   const navigate = useNavigate();
   const [trip, setTrip] = useState<Trip | null>(null);
+  const [ready, setReady] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const t = loadTrip();
     if (!t) navigate({ to: "/" });
     else setTrip(t);
+    setReady(true);
   }, [navigate]);
 
-  if (!trip) return null;
+  if (!ready) return <ItinerarySkeleton />;
+  if (!trip) return <ItinerarySkeleton />;
 
   const total = trip.budgetSummary.reduce((s, i) => s + i.amount, 0);
 
@@ -220,6 +223,51 @@ function MetaRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
       <div className="min-w-0">
         <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
         <div className="text-sm font-medium text-foreground">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function ItinerarySkeleton() {
+  return (
+    <div className="min-h-screen">
+      <Nav />
+      <div className="pt-24 pb-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="skeleton h-4 w-24 mb-6" />
+          <div className="skeleton h-10 w-64 mb-3" />
+          <div className="skeleton h-5 w-80 mb-10" />
+          <div className="grid lg:grid-cols-[1fr_340px] gap-8">
+            <div className="space-y-6">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="card-soft p-6 md:p-8 space-y-5">
+                  <div className="flex items-center gap-4">
+                    <div className="skeleton h-12 w-12 rounded-2xl" />
+                    <div className="flex-1 space-y-2">
+                      <div className="skeleton h-3 w-16" />
+                      <div className="skeleton h-6 w-52" />
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="skeleton h-24" />
+                    <div className="skeleton h-24" />
+                    <div className="skeleton h-24" />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <div className="skeleton h-10" />
+                    <div className="skeleton h-10" />
+                    <div className="skeleton h-10" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <aside className="space-y-6">
+              <div className="skeleton h-56" />
+              <div className="skeleton h-64" />
+              <div className="skeleton h-32" />
+            </aside>
+          </div>
+        </div>
       </div>
     </div>
   );

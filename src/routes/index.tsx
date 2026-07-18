@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight } from "lucide-react";
+import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight, Plane, Compass, Palmtree, Mountain, Camera, Globe2 } from "lucide-react";
 import heroImg from "@/assets/hero-india.jpg";
 import { Nav } from "@/components/Nav";
 import { tripFromApi, saveTrip } from "@/lib/trip-store";
@@ -55,23 +55,35 @@ function Landing() {
 
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {loading && <LoadingOverlay destination={destination} />}
       <Nav />
 
       {/* Hero */}
       <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
         <div className="absolute inset-0 -z-10">
+          <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+          <div className="absolute top-40 -right-32 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
         </div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-2 gap-14 items-center">
+
+        {/* Floating travel icons */}
+        <FloatingIcon icon={Plane} className="top-24 left-[8%] text-primary/60" delay="0s" />
+        <FloatingIcon icon={Palmtree} className="top-48 left-[4%] text-accent/70" delay="1.2s" />
+        <FloatingIcon icon={Mountain} className="bottom-16 left-[10%] text-primary/50" delay="2.4s" />
+        <FloatingIcon icon={Camera} className="top-32 right-[6%] text-accent/60 hidden lg:block" delay="0.8s" />
+        <FloatingIcon icon={Globe2} className="bottom-24 right-[8%] text-primary/50 hidden lg:block" delay="1.8s" />
+        <FloatingIcon icon={Compass} className="top-72 right-[14%] text-primary/40 hidden lg:block" delay="3s" />
+
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-2 gap-14 items-center relative">
           <div className="animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               AI itineraries, crafted like a local
             </div>
             <h1 className="font-display font-extrabold text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-foreground">
               Explore India <br />
-              <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">Like a Local</span>
+              <span className="bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">Like a Local</span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
               Generate personalized AI travel itineraries in seconds — with hidden gems, food, budget and everything in between.
@@ -87,7 +99,7 @@ function Landing() {
           </div>
 
           <div className="relative animate-fade-in">
-            <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 to-accent/20 rounded-[2.5rem] blur-2xl" />
+            <div className="absolute -inset-4 bg-gradient-to-tr from-primary/30 via-primary-glow/20 to-accent/30 rounded-[2.5rem] blur-2xl" />
             <img
               src={heroImg}
               width={1600}
@@ -95,7 +107,7 @@ function Landing() {
               alt="Taj Mahal at sunrise with marigolds"
               className="relative rounded-[2rem] shadow-[var(--shadow-elevated)] w-full h-[420px] md:h-[520px] object-cover"
             />
-            <div className="absolute -bottom-6 -left-6 card-soft p-4 flex items-center gap-3 max-w-[220px]">
+            <div className="absolute -bottom-6 -left-6 glass-card p-4 flex items-center gap-3 max-w-[220px]">
               <span className="grid place-items-center h-10 w-10 rounded-full bg-accent/20">
                 <MapPin className="h-5 w-5 text-accent-foreground" />
               </span>
@@ -103,6 +115,10 @@ function Landing() {
                 <div className="text-xs text-muted-foreground">Trips planned</div>
                 <div className="font-display font-bold text-lg">42,300+</div>
               </div>
+            </div>
+            <div className="absolute -top-4 -right-4 glass-card p-3 hidden md:flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold">AI Powered</span>
             </div>
           </div>
         </div>
@@ -213,5 +229,49 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       <div className="mt-2">{children}</div>
     </label>
+  );
+}
+
+function FloatingIcon({ icon: Icon, className, delay }: { icon: React.ElementType; className?: string; delay?: string }) {
+  return (
+    <div
+      className={`absolute pointer-events-none animate-float ${className ?? ""}`}
+      style={{ animationDelay: delay }}
+      aria-hidden="true"
+    >
+      <div className="grid place-items-center h-12 w-12 rounded-2xl glass-card">
+        <Icon className="h-6 w-6" strokeWidth={2} />
+      </div>
+    </div>
+  );
+}
+
+function LoadingOverlay({ destination }: { destination: string }) {
+  return (
+    <div className="fixed inset-0 z-[100] grid place-items-center bg-background/80 backdrop-blur-xl animate-fade-in">
+      <div className="text-center px-6 max-w-md">
+        <div className="relative grid place-items-center mx-auto h-24 w-24 mb-8">
+          <span className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+          <span className="absolute inset-2 rounded-full bg-primary/30" />
+          <span className="relative grid place-items-center h-16 w-16 rounded-full btn-primary-gradient animate-spin-slow">
+            <Compass className="h-8 w-8" strokeWidth={2.5} />
+          </span>
+        </div>
+        <h2 className="font-display font-bold text-2xl md:text-3xl mb-3 tracking-tight">
+          Crafting your journey to {destination || "India"}
+        </h2>
+        <p className="text-muted-foreground mb-8">
+          Our AI is picking hidden gems, local food and the perfect day-by-day flow…
+        </p>
+        <div className="space-y-3 text-left">
+          {["Finding hidden gems", "Planning meals", "Balancing your budget"].map((s, i) => (
+            <div key={s} className="glass-card p-4 flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: `${i * 200}ms` }}>
+              <div className="h-3 w-3 rounded-full bg-gradient-to-r from-primary to-primary-glow animate-pulse" />
+              <span className="text-sm font-medium">{s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
