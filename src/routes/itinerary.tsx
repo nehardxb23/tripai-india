@@ -21,15 +21,18 @@ export const Route = createFileRoute("/itinerary")({
 function Itinerary() {
   const navigate = useNavigate();
   const [trip, setTrip] = useState<Trip | null>(null);
+  const [ready, setReady] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const t = loadTrip();
     if (!t) navigate({ to: "/" });
     else setTrip(t);
+    setReady(true);
   }, [navigate]);
 
-  if (!trip) return null;
+  if (!ready) return <ItinerarySkeleton />;
+  if (!trip) return <ItinerarySkeleton />;
 
   const total = trip.budgetSummary.reduce((s, i) => s + i.amount, 0);
 
