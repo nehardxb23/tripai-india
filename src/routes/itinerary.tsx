@@ -90,46 +90,24 @@ function Itinerary() {
           </header>
 
           <div className="grid lg:grid-cols-[1fr_340px] gap-8">
-            {/* Days */}
-            <div className="space-y-6">
+            {/* Timeline */}
+            <div className="relative">
               {trip.days.length === 0 && (
                 <div className="card-soft p-10 text-center text-muted-foreground">No itinerary generated.</div>
               )}
-              {trip.days.map((d, i) => (
-                <article
-                  key={d.day}
-                  className="card-soft card-soft-hover p-6 md:p-8 animate-fade-in-up"
-                  style={{ animationDelay: `${i * 80}ms` }}
-                >
-                  <div className="flex items-center gap-4 mb-6">
-                    <span className="grid place-items-center h-12 w-12 rounded-2xl btn-primary-gradient font-display font-bold">
-                      {d.day}
-                    </span>
-                    <div>
-                      <div className="text-xs uppercase tracking-wider text-muted-foreground">Day {d.day}</div>
-                      <h2 className="font-display font-semibold text-2xl">{d.title}</h2>
-                    </div>
+              {trip.days.length > 0 && (
+                <div className="relative pl-6 md:pl-10">
+                  {/* Vertical line */}
+                  <div className="absolute left-2 md:left-4 top-2 bottom-2 w-px bg-gradient-to-b from-primary via-primary-glow to-accent/60" />
+                  <div className="space-y-10">
+                    {trip.days.map((d, i) => (
+                      <TimelineDay key={d.day} day={d} index={i} isToday={i === 0} />
+                    ))}
                   </div>
-
-                  <div className="grid sm:grid-cols-3 gap-4 mb-6">
-                    <Slot icon={Sunrise} label="Morning" text={d.morning} tint="bg-amber-100/60 text-amber-700" />
-                    <Slot icon={Sun} label="Afternoon" text={d.afternoon} tint="bg-orange-100/60 text-orange-700" />
-                    <Slot icon={Moon} label="Evening" text={d.evening} tint="bg-indigo-100/60 text-indigo-700" />
-                  </div>
-
-                  <div className="grid sm:grid-cols-3 gap-3 mb-4">
-                    <MetaRow icon={Utensils} label="Breakfast" value={d.breakfast} />
-                    <MetaRow icon={Utensils} label="Lunch" value={d.lunch} />
-                    <MetaRow icon={Utensils} label="Dinner" value={d.dinner} />
-                  </div>
-                  <div className="grid sm:grid-cols-3 gap-3 pt-4 border-t border-border">
-                    <MetaRow icon={Bus} label="Transport" value={d.transport} />
-                    <MetaRow icon={Wallet} label="Daily cost" value={d.budget} />
-                    <MetaRow icon={Lightbulb} label="Local tip" value={d.tips} />
-                  </div>
-                </article>
-              ))}
+                </div>
+              )}
             </div>
+
 
 
             {/* Sidebar */}
