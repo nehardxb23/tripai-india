@@ -1,12 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  Sunrise, Sun, Moon, Utensils, Bus, Wallet, Lightbulb,
-  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles
+  Sunrise, Sun, Moon, Coffee, UtensilsCrossed, ChefHat, Car, Wallet, Lightbulb,
+  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { Nav } from "@/components/Nav";
-import { loadTrip, type Trip } from "@/lib/trip-store";
+import { loadTrip, type Trip, type DayPlan } from "@/lib/trip-store";
 
 export const Route = createFileRoute("/itinerary")({
   head: () => ({
