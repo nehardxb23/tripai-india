@@ -1,12 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { ClientOnly } from "@tanstack/react-router";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Sunrise, Sun, Moon, Coffee, UtensilsCrossed, ChefHat, Car, Wallet, Lightbulb,
-  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin
+  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin,
+  Map as MapIcon, PartyPopper, Camera, Clock, Compass
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { Nav } from "@/components/Nav";
-import { loadTrip, type Trip, type DayPlan } from "@/lib/trip-store";
+import { PhotoCarousel } from "@/components/PhotoCarousel";
+import { AnalyticsCards } from "@/components/AnalyticsCards";
+import { loadTrip, type Trip, type DayPlan, type Attraction } from "@/lib/trip-store";
+
+// Leaflet touches window at import time — lazy-load behind ClientOnly.
+const TripMap = lazy(() => import("@/components/TripMap"));
 
 export const Route = createFileRoute("/itinerary")({
   head: () => ({
@@ -79,7 +86,12 @@ function Itinerary() {
             <ArrowLeft className="h-4 w-4" /> Back
           </Link>
 
-          <header className="flex flex-wrap items-end justify-between gap-6 mb-10 animate-fade-in-up">
+          {/* Photo carousel */}
+          <div className="mb-8 animate-fade-in">
+            <PhotoCarousel destination={trip.input.destination} />
+          </div>
+
+          <header className="flex flex-wrap items-end justify-between gap-6 mb-8 animate-fade-in-up">
             <div>
               <div className="text-sm font-semibold uppercase tracking-wider text-primary mb-2">Your itinerary</div>
               <h1 className="font-display font-extrabold text-4xl md:text-5xl tracking-tight">{trip.input.destination}</h1>
@@ -88,6 +100,31 @@ function Itinerary() {
               </p>
             </div>
           </header>
+
+          {/* Analytics */}
+          <div className="mb-8 animate-fade-in-up">
+            <AnalyticsCards items={trip.budgetSummary} />
+          </div>
+
+          {/* Interactive map */}
+          <section className="mb-10 animate-fade-in-up">
+            <div className="flex items-center gap-2 mb-4">
+              <MapIcon className="h-5 w-5 text-primary" />
+              <h2 className="font-display font-bold text-2xl tracking-tight">Trip map</h2>
+              <span className="text-sm text-muted-foreground ml-2">Markers, routes & popup notes</span>
+            </div>
+            <div className="card-soft overflow-hidden p-0 h-[420px]">
+              <ClientOnly
+                fallback={
+                  <div className="skeleton h-full w-full" />
+                }
+              >
+                <Suspense fallback={<div className="skeleton h-full w-full" />}>
+                  <TripMap days={trip.days} />
+                </Suspense>
+              </ClientOnly>
+            </div>
+          </section>
 
           <div className="grid lg:grid-cols-[1fr_340px] gap-8">
             {/* Timeline */}
@@ -161,6 +198,16 @@ function Itinerary() {
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">{trip.weather}</p>
               </div>
+
+              {trip.festivals && (
+                <div className="card-soft p-6 bg-gradient-to-br from-accent/10 to-transparent">
+                  <div className="flex items-center gap-2 mb-3">
+                    <PartyPopper className="h-5 w-5 text-accent-foreground" />
+                    <h3 className="font-display font-semibold text-lg">Local festivals</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{trip.festivals}</p>
+                </div>
+              )}
 
               <div className="space-y-3">
                 <button onClick={downloadPDF} className="btn-primary-gradient w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold">
@@ -253,6 +300,20 @@ function TimelineDay({ day, index, isToday }: { day: DayPlan; index: number; isT
           <SlotCard emoji="🌞" icon={Sun} label="Afternoon" text={day.afternoon} gradient="from-orange-200/50 to-rose-100/30" iconColor="text-orange-600" />
           <SlotCard emoji="🌇" icon={Moon} label="Evening" text={day.evening} gradient="from-indigo-200/50 to-violet-100/30" iconColor="text-indigo-600" />
         </div>
+
+        {/* Attractions */}
+        {day.attractions.length > 0 && (
+          <div className="mb-4 rounded-2xl border border-border/60 bg-surface/60 p-4">
+            <div className="flex items-center gap-2 mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Compass className="h-3.5 w-3.5 text-primary" /> Places on this day
+            </div>
+            <ul className="space-y-3">
+              {day.attractions.map((a, i) => (
+                <AttractionRow key={`${a.name}-${i}`} a={a} n={i + 1} />
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Meals */}
         <div className="grid sm:grid-cols-3 gap-3 mb-3">
@@ -365,5 +426,35 @@ function ItinerarySkeleton() {
         </div>
       </div>
     </div>
+  );
+}
+
+function AttractionRow({ a, n }: { a: Attraction; n: number }) {
+  return (
+    <li className="flex gap-3">
+      <span className="mt-0.5 grid place-items-center h-6 w-6 shrink-0 rounded-full bg-primary/10 text-primary text-xs font-bold font-display">
+        {n}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="font-semibold text-sm">{a.name}</div>
+        {a.description && (
+          <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{a.description}</p>
+        )}
+        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-[11px] text-muted-foreground">
+          {a.travelTime && (
+            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {a.travelTime}</span>
+          )}
+          {a.waitTime && (
+            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> Wait {a.waitTime}</span>
+          )}
+          {a.photoTip && (
+            <span className="inline-flex items-center gap-1"><Camera className="h-3 w-3" /> {a.photoTip}</span>
+          )}
+          {a.alternative && (
+            <span className="inline-flex items-center gap-1"><Sparkles className="h-3 w-3" /> Alt: {a.alternative}</span>
+          )}
+        </div>
+      </div>
+    </li>
   );
 }
