@@ -428,3 +428,33 @@ function ItinerarySkeleton() {
     </div>
   );
 }
+
+function AttractionRow({ a, n }: { a: Attraction; n: number }) {
+  return (
+    <li className="flex gap-3">
+      <span className="mt-0.5 grid place-items-center h-6 w-6 shrink-0 rounded-full bg-primary/10 text-primary text-xs font-bold font-display">
+        {n}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="font-semibold text-sm">{a.name}</div>
+        {a.description && (
+          <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{a.description}</p>
+        )}
+        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-[11px] text-muted-foreground">
+          {a.travelTime && (
+            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {a.travelTime}</span>
+          )}
+          {a.waitTime && (
+            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> Wait {a.waitTime}</span>
+          )}
+          {a.photoTip && (
+            <span className="inline-flex items-center gap-1"><Camera className="h-3 w-3" /> {a.photoTip}</span>
+          )}
+          {a.alternative && (
+            <span className="inline-flex items-center gap-1"><Sparkles className="h-3 w-3" /> Alt: {a.alternative}</span>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+}
