@@ -55,23 +55,35 @@ function Landing() {
 
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {loading && <LoadingOverlay destination={destination} />}
       <Nav />
 
       {/* Hero */}
       <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
         <div className="absolute inset-0 -z-10">
+          <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+          <div className="absolute top-40 -right-32 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
         </div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-2 gap-14 items-center">
+
+        {/* Floating travel icons */}
+        <FloatingIcon icon={Plane} className="top-24 left-[8%] text-primary/60" delay="0s" />
+        <FloatingIcon icon={Palmtree} className="top-48 left-[4%] text-accent/70" delay="1.2s" />
+        <FloatingIcon icon={Mountain} className="bottom-16 left-[10%] text-primary/50" delay="2.4s" />
+        <FloatingIcon icon={Camera} className="top-32 right-[6%] text-accent/60 hidden lg:block" delay="0.8s" />
+        <FloatingIcon icon={Globe2} className="bottom-24 right-[8%] text-primary/50 hidden lg:block" delay="1.8s" />
+        <FloatingIcon icon={Compass} className="top-72 right-[14%] text-primary/40 hidden lg:block" delay="3s" />
+
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-2 gap-14 items-center relative">
           <div className="animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               AI itineraries, crafted like a local
             </div>
             <h1 className="font-display font-extrabold text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-foreground">
               Explore India <br />
-              <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">Like a Local</span>
+              <span className="bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">Like a Local</span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
               Generate personalized AI travel itineraries in seconds — with hidden gems, food, budget and everything in between.
@@ -87,7 +99,7 @@ function Landing() {
           </div>
 
           <div className="relative animate-fade-in">
-            <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 to-accent/20 rounded-[2.5rem] blur-2xl" />
+            <div className="absolute -inset-4 bg-gradient-to-tr from-primary/30 via-primary-glow/20 to-accent/30 rounded-[2.5rem] blur-2xl" />
             <img
               src={heroImg}
               width={1600}
@@ -95,7 +107,7 @@ function Landing() {
               alt="Taj Mahal at sunrise with marigolds"
               className="relative rounded-[2rem] shadow-[var(--shadow-elevated)] w-full h-[420px] md:h-[520px] object-cover"
             />
-            <div className="absolute -bottom-6 -left-6 card-soft p-4 flex items-center gap-3 max-w-[220px]">
+            <div className="absolute -bottom-6 -left-6 glass-card p-4 flex items-center gap-3 max-w-[220px]">
               <span className="grid place-items-center h-10 w-10 rounded-full bg-accent/20">
                 <MapPin className="h-5 w-5 text-accent-foreground" />
               </span>
@@ -103,6 +115,10 @@ function Landing() {
                 <div className="text-xs text-muted-foreground">Trips planned</div>
                 <div className="font-display font-bold text-lg">42,300+</div>
               </div>
+            </div>
+            <div className="absolute -top-4 -right-4 glass-card p-3 hidden md:flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold">AI Powered</span>
             </div>
           </div>
         </div>
