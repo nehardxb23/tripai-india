@@ -219,6 +219,55 @@ function Landing() {
         </div>
       </section>
 
+      {/* How It Works */}
+      <section id="how-it-works" className="pb-28 scroll-mt-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="max-w-2xl mx-auto text-center mb-16">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
+              <Compass className="h-3.5 w-3.5 text-primary" />
+              Simple & seamless
+            </div>
+            <h2 className="font-display font-bold text-3xl md:text-5xl tracking-tight">
+              How TripAI India works
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Four steps from inspiration to itinerary.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {HOW_IT_WORKS_STEPS.map((s, i) => (
+              <div
+                key={s.step}
+                className="group relative glass-card card-soft-hover p-7 md:p-8 rounded-[2rem] overflow-hidden animate-fade-in-up"
+                style={{ animationDelay: `${i * 120}ms` }}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-60 group-hover:opacity-100 transition-opacity duration-500`}
+                  aria-hidden="true"
+                />
+                <div className="relative">
+                  <div className="flex items-start justify-between mb-6">
+                    <span className="grid place-items-center h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 text-primary shadow-soft">
+                      <s.icon className="h-7 w-7" strokeWidth={2} />
+                    </span>
+                    <span className="font-display font-bold text-3xl text-muted-foreground/30">
+                      {s.step}
+                    </span>
+                  </div>
+                  <h3 className="font-display font-semibold text-xl mb-3">
+                    {s.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
+                    {s.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="pb-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
