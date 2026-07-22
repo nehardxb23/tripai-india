@@ -161,9 +161,14 @@ export function generateTrip(input: TripInput): Trip {
 
 import type { GenerateTripResult } from "./generate-trip.functions";
 
-function parseRupees(s: string): number {
-  const n = Number((s || "").replace(/[^0-9.]/g, ""));
-  return Number.isFinite(n) ? n : 0;
+export function computeBudget(days: number, perDay: number) {
+  const total = Math.round(days * perDay);
+  const hotel = Math.round(total * 0.4);
+  const food = Math.round(total * 0.25);
+  const transport = Math.round(total * 0.15);
+  // Activities absorbs any rounding drift so the sum never exceeds total.
+  const activities = total - hotel - food - transport;
+  return { total, hotel, food, transport, activities };
 }
 
 export function tripFromApi(input: TripInput, api: any): Trip {
@@ -178,11 +183,9 @@ export function tripFromApi(input: TripInput, api: any): Trip {
     ? api.data.days
     : [];
   const apiPacking = Array.isArray(api?.packing) ? api.packing : [];
-  const apiBudget = api?.budget ?? {};
 
   const pick = (d: any, key: string): string => {
     if (typeof d?.[key] === "string") return d[key];
-    // nested under time-of-day objects
     for (const slot of ["morning", "afternoon", "evening"]) {
       const v = d?.[slot];
       if (v && typeof v === "object" && typeof v[key] === "string") return v[key];
@@ -211,6 +214,9 @@ export function tripFromApi(input: TripInput, api: any): Trip {
       }))
       .filter((a: Attraction) => a.name && Number.isFinite(a.lat) && Number.isFinite(a.lng));
 
+    // Per-day budget is deterministic from user's input; ignore AI's cost strings.
+    const perDayStr = `₹${Math.round(input.budget).toLocaleString("en-IN")}`;
+
     return {
       day: d?.day ?? i + 1,
       title: i === 0
@@ -225,17 +231,19 @@ export function tripFromApi(input: TripInput, api: any): Trip {
       lunch: pick(d, "lunch"),
       dinner: pick(d, "dinner"),
       transport: pick(d, "transport"),
-      budget: pick(d, "estimatedCost") || pick(d, "cost") || pick(d, "budget"),
+      budget: perDayStr,
       tips: pick(d, "tip") || pick(d, "localTip") || pick(d, "tips"),
       attractions,
     };
   });
 
+  // Compute budget summary programmatically — never trust AI numbers.
+  const b = computeBudget(input.days, input.budget);
   const budgetSummary = [
-    { label: "Hotel", amount: parseRupees(apiBudget.hotel) },
-    { label: "Food", amount: parseRupees(apiBudget.food) },
-    { label: "Transport", amount: parseRupees(apiBudget.transport) },
-    { label: "Activities", amount: parseRupees(apiBudget.activities) },
+    { label: "Hotel", amount: b.hotel },
+    { label: "Food", amount: b.food },
+    { label: "Transport", amount: b.transport },
+    { label: "Activities", amount: b.activities },
   ];
 
   return {
@@ -247,6 +255,7 @@ export function tripFromApi(input: TripInput, api: any): Trip {
     budgetSummary,
   };
 }
+
 
 export function saveTrip(trip: Trip) {
   if (typeof window === "undefined") return;

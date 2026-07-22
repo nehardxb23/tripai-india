@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import fallbackImg from "@/assets/hero-india.jpg";
 
-// Uses Unsplash's public source redirect — no API key needed.
-// Each keyword gives a different destination-relevant photo, cycled with a smooth fade.
-function unsplashUrl(destination: string, keyword: string, seed: number) {
-  const q = encodeURIComponent(`${destination},${keyword},india,travel`);
-  return `https://source.unsplash.com/1600x900/?${q}&sig=${seed}`;
-}
-
-const KEYWORDS = ["skyline", "street", "temple", "market", "landmark", "food"];
+// Curated set of reliable Unsplash India travel photos (direct CDN URLs).
+// These are stable image IDs — unlike source.unsplash.com which is deprecated.
+const INDIA_PHOTOS = [
+  "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1600&q=80", // Taj Mahal
+  "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1600&q=80", // Jaipur palace
+  "https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=1600&q=80", // temple
+  "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1600&q=80", // Hawa Mahal
+  "https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&w=1600&q=80", // Varanasi ghats
+  "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1600&q=80", // India street
+];
 
 export function PhotoCarousel({ destination }: { destination: string }) {
-  const slides = KEYWORDS.map((k, i) => ({
-    src: unsplashUrl(destination, k, i + 1),
-    keyword: k,
-  }));
-
+  const slides = INDIA_PHOTOS.map((src, i) => ({ src, i }));
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -26,22 +25,28 @@ export function PhotoCarousel({ destination }: { destination: string }) {
   const go = (dir: number) =>
     setIndex((i) => (i + dir + slides.length) % slides.length);
 
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (img.src !== fallbackImg) img.src = fallbackImg;
+  };
+
   return (
     <div className="relative w-full h-[42vh] md:h-[56vh] overflow-hidden rounded-[2rem] shadow-[var(--shadow-elevated)] bg-muted">
       {slides.map((s, i) => (
         <img
           key={s.src}
           src={s.src}
-          alt={`${destination} ${s.keyword}`}
+          alt={`${destination} travel scene ${i + 1}`}
           loading={i === 0 ? "eager" : "lazy"}
+          onError={handleError}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
             i === index ? "opacity-100" : "opacity-0"
           }`}
         />
       ))}
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+      {/* Subtle bottom-only gradient so photos stay clearly visible */}
+      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none" />
 
       <div className="absolute inset-x-0 bottom-0 p-6 md:p-10 text-white">
         <div className="inline-flex items-center gap-2 rounded-full glass-card !bg-white/15 !border-white/20 px-3 py-1 text-xs font-semibold tracking-wide uppercase text-white/90">
