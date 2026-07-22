@@ -22,6 +22,37 @@ const FEATURES = [
   { icon: Sparkles, title: "AI Powered", desc: "Itineraries tailored to your days, budget and travel style." },
 ];
 
+const HOW_IT_WORKS_STEPS = [
+  {
+    step: "01",
+    icon: MapPin,
+    title: "Choose Your Destination",
+    desc: "Enter your destination, number of travel days, budget per day, and travel style.",
+    gradient: "from-primary/10 via-primary/5 to-transparent",
+  },
+  {
+    step: "02",
+    icon: Sparkles,
+    title: "AI Creates Your Itinerary",
+    desc: "Our AI generates a personalized day-by-day travel plan with attractions, local experiences, food recommendations, transport, and estimated costs.",
+    gradient: "from-accent/10 via-accent/5 to-transparent",
+  },
+  {
+    step: "03",
+    icon: Map,
+    title: "Explore Interactive Travel Plans",
+    desc: "View your itinerary on an interactive map with routes, destination images, budget breakdown, packing checklist, and weather tips.",
+    gradient: "from-primary/10 via-primary/5 to-transparent",
+  },
+  {
+    step: "04",
+    icon: Plane,
+    title: "Save & Travel",
+    desc: "Download your itinerary as a PDF, save your trip, or generate a new itinerary anytime.",
+    gradient: "from-accent/10 via-accent/5 to-transparent",
+  },
+];
+
 function Landing() {
   const navigate = useNavigate();
   const callGenerate = useServerFn(generateTripFn);
