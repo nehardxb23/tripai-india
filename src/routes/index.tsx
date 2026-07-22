@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight, Plane, Compass, Palmtree, Mountain, Camera, Globe2 } from "lucide-react";
+import { Sparkles, MapPin, Wallet, Utensils, Gem, Users, Wand2, ArrowRight, Plane, Compass, Palmtree, Mountain, Camera, Globe2, Map } from "lucide-react";
 import heroImg from "@/assets/hero-india.jpg";
 import { Nav } from "@/components/Nav";
 import { tripFromApi, saveTrip } from "@/lib/trip-store";
@@ -20,6 +20,37 @@ const FEATURES = [
   { icon: Utensils, title: "Food Recommendations", desc: "Regional dishes and the exact stalls to try them at." },
   { icon: Users, title: "Local Experiences", desc: "Workshops, home-cooked meals and neighborhood walks." },
   { icon: Sparkles, title: "AI Powered", desc: "Itineraries tailored to your days, budget and travel style." },
+];
+
+const HOW_IT_WORKS_STEPS = [
+  {
+    step: "01",
+    icon: MapPin,
+    title: "Choose Your Destination",
+    desc: "Enter your destination, number of travel days, budget per day, and travel style.",
+    gradient: "from-primary/10 via-primary/5 to-transparent",
+  },
+  {
+    step: "02",
+    icon: Sparkles,
+    title: "AI Creates Your Itinerary",
+    desc: "Our AI generates a personalized day-by-day travel plan with attractions, local experiences, food recommendations, transport, and estimated costs.",
+    gradient: "from-accent/10 via-accent/5 to-transparent",
+  },
+  {
+    step: "03",
+    icon: Map,
+    title: "Explore Interactive Travel Plans",
+    desc: "View your itinerary on an interactive map with routes, destination images, budget breakdown, packing checklist, and weather tips.",
+    gradient: "from-primary/10 via-primary/5 to-transparent",
+  },
+  {
+    step: "04",
+    icon: Plane,
+    title: "Save & Travel",
+    desc: "Download your itinerary as a PDF, save your trip, or generate a new itinerary anytime.",
+    gradient: "from-accent/10 via-accent/5 to-transparent",
+  },
 ];
 
 function Landing() {
@@ -185,6 +216,55 @@ function Landing() {
             )}
           </form>
 
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section id="how-it-works" className="pb-28 scroll-mt-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="max-w-2xl mx-auto text-center mb-16">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 backdrop-blur px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
+              <Compass className="h-3.5 w-3.5 text-primary" />
+              Simple & seamless
+            </div>
+            <h2 className="font-display font-bold text-3xl md:text-5xl tracking-tight">
+              How TripAI India works
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Four steps from inspiration to itinerary.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {HOW_IT_WORKS_STEPS.map((s, i) => (
+              <div
+                key={s.step}
+                className="group relative glass-card card-soft-hover p-7 md:p-8 rounded-[2rem] overflow-hidden animate-fade-in-up"
+                style={{ animationDelay: `${i * 120}ms` }}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-60 group-hover:opacity-100 transition-opacity duration-500`}
+                  aria-hidden="true"
+                />
+                <div className="relative">
+                  <div className="flex items-start justify-between mb-6">
+                    <span className="grid place-items-center h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 text-primary shadow-soft">
+                      <s.icon className="h-7 w-7" strokeWidth={2} />
+                    </span>
+                    <span className="font-display font-bold text-3xl text-muted-foreground/30">
+                      {s.step}
+                    </span>
+                  </div>
+                  <h3 className="font-display font-semibold text-xl mb-3">
+                    {s.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
+                    {s.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
