@@ -169,9 +169,22 @@ Return ONLY the JSON object with EXACTLY these top-level keys: "tripSummary", "d
     const text = json.choices?.[0]?.message?.content;
     if (!text) throw new Error("AI returned no content");
 
-    try {
-      return JSON.parse(text) as GenerateTripResult;
-    } catch {
+    const tryParse = (s: string): GenerateTripResult | null => {
+      try { return JSON.parse(s) as GenerateTripResult; } catch { return null; }
+    };
+    let parsed = tryParse(text);
+    if (!parsed) {
+      const stripped = text.replace(/^\s*```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+      parsed = tryParse(stripped);
+    }
+    if (!parsed) {
+      const start = text.indexOf("{");
+      const end = text.lastIndexOf("}");
+      if (start !== -1 && end > start) parsed = tryParse(text.slice(start, end + 1));
+    }
+    if (!parsed) {
+      console.error("AI returned invalid JSON:", text.slice(0, 500));
       throw new Error("AI returned invalid JSON");
     }
+    return parsed;
   });
