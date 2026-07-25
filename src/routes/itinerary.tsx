@@ -3,7 +3,7 @@ import { ClientOnly } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Sunrise, Sun, Moon, Coffee, UtensilsCrossed, ChefHat, Car, Wallet, Lightbulb,
-  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin,
+  Download, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin,
   Map as MapIcon, PartyPopper, Camera, Clock, Compass
 } from "lucide-react";
 import jsPDF from "jspdf";
