@@ -3,7 +3,7 @@ import { ClientOnly } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Sunrise, Sun, Moon, Coffee, UtensilsCrossed, ChefHat, Car, Wallet, Lightbulb,
-  Download, Bookmark, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin,
+  Download, Check, ArrowLeft, CloudSun, Package, Sparkles, MapPin,
   Map as MapIcon, PartyPopper, Camera, Clock, Compass
 } from "lucide-react";
 import jsPDF from "jspdf";
@@ -29,7 +29,6 @@ function Itinerary() {
   const navigate = useNavigate();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [ready, setReady] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const t = loadTrip();
@@ -75,7 +74,7 @@ function Itinerary() {
     doc.save(`tripai-${trip.input.destination.toLowerCase()}.pdf`);
   };
 
-  const save = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
+  
 
   return (
     <div className="min-h-screen">
@@ -212,9 +211,6 @@ function Itinerary() {
               <div className="space-y-3">
                 <button onClick={downloadPDF} className="btn-primary-gradient w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold">
                   <Download className="h-4 w-4" /> Download PDF
-                </button>
-                <button onClick={save} className="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold border border-border bg-surface hover:border-foreground/40 transition-colors">
-                  {saved ? <><Check className="h-4 w-4 text-accent" /> Saved!</> : <><Bookmark className="h-4 w-4" /> Save Trip</>}
                 </button>
                 <Link to="/" className="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold border border-border bg-surface hover:border-foreground/40 transition-colors">
                   <Sparkles className="h-4 w-4" /> Generate Again
