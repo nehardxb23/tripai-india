@@ -74,7 +74,7 @@ function Itinerary() {
     doc.save(`tripai-${trip.input.destination.toLowerCase()}.pdf`);
   };
 
-  const save = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
+  
 
   return (
     <div className="min-h-screen">
