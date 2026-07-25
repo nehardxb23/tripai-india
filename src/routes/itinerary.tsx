@@ -29,7 +29,6 @@ function Itinerary() {
   const navigate = useNavigate();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [ready, setReady] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const t = loadTrip();
