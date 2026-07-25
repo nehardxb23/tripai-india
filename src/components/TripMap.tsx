@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { DayPlan, Attraction } from "@/lib/trip-store";
@@ -45,7 +45,7 @@ function FitBounds({ points }: { points: Array<[number, number]> }) {
   return null;
 }
 
-export default function TripMap({ days }: { days: DayPlan[] }) {
+export default function TripMap({ days, destination }: { days: DayPlan[]; destination?: string }) {
   const allPoints = useMemo(
     () =>
       days.flatMap((d) =>
@@ -67,15 +67,59 @@ export default function TripMap({ days }: { days: DayPlan[] }) {
     [days]
   );
 
-  if (positions.length === 0) {
+  // Fallback: if the AI returned no coordinates (common for states like
+  // "Delhi" or "Kerala"), geocode the destination so a map still renders.
+  const [fallbackCenter, setFallbackCenter] = useState<[number, number] | null>(null);
+  const needsFallback = positions.length === 0 && !!destination;
+
+  useEffect(() => {
+    if (!needsFallback) return;
+    let cancelled = false;
+    fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=${encodeURIComponent(
+        destination!
+      )}`
+    )
+      .then((r) => (r.ok ? r.json() : []))
+      .then((results: Array<{ lat: string; lon: string }>) => {
+        const hit = results?.[0];
+        if (!cancelled && hit) setFallbackCenter([Number(hit.lat), Number(hit.lon)]);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [needsFallback, destination]);
+
+  if (positions.length === 0 && !fallbackCenter) {
     return (
       <div className="grid place-items-center h-full text-sm text-muted-foreground">
-        No map coordinates for this trip.
+        {needsFallback ? "Loading map…" : "No map coordinates for this trip."}
       </div>
     );
   }
 
+  if (positions.length === 0 && fallbackCenter) {
+    return (
+      <MapContainer
+        center={fallbackCenter}
+        zoom={11}
+        scrollWheelZoom={false}
+        style={{ height: "100%", width: "100%", borderRadius: "1.5rem" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        />
+        <Marker position={fallbackCenter}>
+          <Popup>{destination}</Popup>
+        </Marker>
+      </MapContainer>
+    );
+  }
+
   const center = positions[0];
+
 
   return (
     <MapContainer

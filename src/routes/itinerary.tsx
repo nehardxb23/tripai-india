@@ -119,7 +119,7 @@ function Itinerary() {
                 }
               >
                 <Suspense fallback={<div className="skeleton h-full w-full" />}>
-                  <TripMap days={trip.days} />
+                  <TripMap days={trip.days} destination={trip.input.destination} />
                 </Suspense>
               </ClientOnly>
             </div>

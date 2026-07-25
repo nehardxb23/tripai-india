@@ -2,28 +2,78 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import fallbackImg from "@/assets/hero-india.jpg";
 
-// Curated set of reliable Unsplash India travel photos (direct CDN URLs).
-// These are stable image IDs — unlike source.unsplash.com which is deprecated.
-const INDIA_PHOTOS = [
-  "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1600&q=80", // Taj Mahal
-  "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1600&q=80", // Jaipur palace
-  "https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=1600&q=80", // temple
-  "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1600&q=80", // Hawa Mahal
-  "https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&w=1600&q=80", // Varanasi ghats
-  "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1600&q=80", // India street
+// Generic India fallbacks (stable Unsplash CDN IDs) used only if no
+// destination-specific photos can be found.
+const FALLBACK_PHOTOS = [
+  "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1600&q=80",
 ];
 
+type CommonsResponse = {
+  query?: {
+    pages?: Record<
+      string,
+      { title?: string; imageinfo?: Array<{ thumburl?: string; width?: number; height?: number }> }
+    >;
+  };
+};
+
+async function fetchDestinationPhotos(destination: string): Promise<string[]> {
+  const search = encodeURIComponent(`${destination} India`);
+  const url =
+    `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*` +
+    `&generator=search&gsrnamespace=6&gsrlimit=24&gsrsearch=${search}` +
+    `&prop=imageinfo&iiprop=url|size&iiurlwidth=1600`;
+
+  const res = await fetch(url);
+  if (!res.ok) return [];
+  const json = (await res.json()) as CommonsResponse;
+  const pages = Object.values(json.query?.pages ?? {});
+
+  return pages
+    .filter((p) => /\.(jpe?g|png)$/i.test(p.title ?? ""))
+    .map((p) => p.imageinfo?.[0])
+    .filter((info): info is { thumburl: string; width: number; height: number } =>
+      Boolean(info?.thumburl && info.width && info.height),
+    )
+    // landscape-ish only, so the hero crop looks good
+    .filter((info) => info.width / info.height > 1.2)
+    .slice(0, 6)
+    .map((info) => info.thumburl);
+}
+
 export function PhotoCarousel({ destination }: { destination: string }) {
-  const slides = INDIA_PHOTOS.map((src, i) => ({ src, i }));
+  const [photos, setPhotos] = useState<string[]>(FALLBACK_PHOTOS);
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5000);
+    let cancelled = false;
+    setIndex(0);
+    setPhotos(FALLBACK_PHOTOS);
+    if (!destination) return;
+
+    fetchDestinationPhotos(destination)
+      .then((found) => {
+        if (!cancelled && found.length >= 2) setPhotos(found);
+      })
+      .catch(() => {
+        /* keep fallbacks */
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [destination]);
+
+  useEffect(() => {
+    const t = setInterval(() => setIndex((i) => (i + 1) % photos.length), 5000);
     return () => clearInterval(t);
-  }, [slides.length]);
+  }, [photos.length]);
 
   const go = (dir: number) =>
-    setIndex((i) => (i + dir + slides.length) % slides.length);
+    setIndex((i) => (i + dir + photos.length) % photos.length);
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -32,10 +82,10 @@ export function PhotoCarousel({ destination }: { destination: string }) {
 
   return (
     <div className="relative w-full h-[42vh] md:h-[56vh] overflow-hidden rounded-[2rem] shadow-[var(--shadow-elevated)] bg-muted">
-      {slides.map((s, i) => (
+      {photos.map((src, i) => (
         <img
-          key={s.src}
-          src={s.src}
+          key={src}
+          src={src}
           alt={`${destination} travel scene ${i + 1}`}
           loading={i === 0 ? "eager" : "lazy"}
           onError={handleError}
@@ -75,7 +125,7 @@ export function PhotoCarousel({ destination }: { destination: string }) {
 
       {/* Dots */}
       <div className="absolute bottom-4 right-4 flex gap-1.5">
-        {slides.map((_, i) => (
+        {photos.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
