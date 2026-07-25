@@ -212,9 +212,6 @@ function Itinerary() {
                 <button onClick={downloadPDF} className="btn-primary-gradient w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold">
                   <Download className="h-4 w-4" /> Download PDF
                 </button>
-                <button onClick={save} className="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold border border-border bg-surface hover:border-foreground/40 transition-colors">
-                  {saved ? <><Check className="h-4 w-4 text-accent" /> Saved!</> : <><Bookmark className="h-4 w-4" /> Save Trip</>}
-                </button>
                 <Link to="/" className="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold border border-border bg-surface hover:border-foreground/40 transition-colors">
                   <Sparkles className="h-4 w-4" /> Generate Again
                 </Link>
