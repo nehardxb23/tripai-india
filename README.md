@@ -1,8 +1,21 @@
+<div align="center">
+  
 # ✈️ TripAI India
 
 ## AI-Powered Travel Planner for Incredible India 🇮🇳
 
 Generate personalized day-by-day travel itineraries with AI, interactive maps, budget planning, destination insights, and downloadable travel guides.
+
+[![React](https://img.shields.io/badge/React-19-blue?logo=react)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)]()
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?logo=tailwindcss)]()
+[![Gemini AI](https://img.shields.io/badge/Gemini-AI-orange)]()
+[![Leaflet](https://img.shields.io/badge/Leaflet-Maps-green?logo=leaflet)]()
+[![Lovable](https://img.shields.io/badge/Built_with-Lovable-purple)]()
+
+</div>
+
+---
 
 ### 🌍 Overview
 
