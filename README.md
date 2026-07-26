@@ -11,8 +11,6 @@ https://tripai-india.lovable.app/
 
 </div>
 
-</div>
-
 ---
 
 ### 🌍 Overview
