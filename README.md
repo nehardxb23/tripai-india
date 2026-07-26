@@ -49,12 +49,6 @@ The application creates a complete travel plan including attractions, hidden gem
 
 ### 🏠 Home Page
 
-> Replace with your screenshot
-
-```
-screenshots/home.png
-```
-
 ![Home](screenshots/home.png)
 
 ---
