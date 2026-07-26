@@ -1,10 +1,10 @@
 # ✈️ TripAI India
 
-### AI-Powered Travel Planner for Incredible India 🇮🇳
+## AI-Powered Travel Planner for Incredible India 🇮🇳
 
 Generate personalized day-by-day travel itineraries with AI, interactive maps, budget planning, destination insights, and downloadable travel guides.
 
-## 🌍 Overview
+### 🌍 Overview
 
 Planning a trip can be overwhelming. Travelers often spend hours researching destinations, attractions, transportation, food, and budgeting.
 
@@ -21,7 +21,7 @@ The application creates a complete travel plan including attractions, hidden gem
 
 ---
 
-# ✨ Features
+### ✨ Features
 
 ✅ AI-generated personalized itineraries
 
@@ -45,9 +45,9 @@ The application creates a complete travel plan including attractions, hidden gem
 
 ---
 
-# 📸 Screenshots
+### 📸 Screenshots
 
-## 🏠 Home Page
+### 🏠 Home Page
 
 > Replace with your screenshot
 
@@ -59,31 +59,31 @@ screenshots/home.png
 
 ---
 
-## 📝 Trip Planner
+### 📝 Trip Planner
 
 ![Planner](screenshots/planner.png)
 
 ---
 
-## 🗺️ Interactive Map
+### 🗺️ Interactive Map
 
 ![Map](screenshots/map.png)
 
 ---
 
-## 📅 AI Generated Itinerary
+### 📅 AI Generated Itinerary
 
 ![Itinerary](screenshots/itinerary.png)
 
 ---
 
-## 💰 Budget Dashboard
+### 💰 Budget Dashboard
 
 ![Budget](screenshots/budget.png)
 
 ---
 
-# 🛠 Tech Stack
+### 🛠 Tech Stack
 
 | Category | Technology |
 |----------|------------|
@@ -97,7 +97,7 @@ screenshots/home.png
 
 ---
 
-# 🚀 How It Works
+### 🚀 How It Works
 
 1️⃣ Enter your destination.
 
@@ -115,7 +115,7 @@ screenshots/home.png
 
 ---
 
-# 📂 Project Structure
+### 📂 Project Structure
 
 ```
 TripAI-India
@@ -136,7 +136,7 @@ TripAI-India
 
 ---
 
-# 💡 Future Enhancements
+### 💡 Future Enhancements
 
 - User Authentication
 - Hotel Recommendations
@@ -149,7 +149,7 @@ TripAI-India
 
 ---
 
-# 🎯 Learning Outcomes
+### 🎯 Learning Outcomes
 
 This project helped me gain experience in:
 
@@ -166,7 +166,7 @@ This project helped me gain experience in:
 
 ---
 
-# 📈 Project Highlights
+### 📈 Project Highlights
 
 - 🤖 AI-powered itinerary generation
 - 🗺️ Interactive mapping experience
@@ -177,7 +177,7 @@ This project helped me gain experience in:
 
 ---
 
-# 👩‍💻 Author
+### 👩‍💻 Author
 
 **Neha Ravi Kumar**
 
@@ -185,6 +185,6 @@ AI & Data Science Engineering Student
 
 ---
 
-## ⭐ If you like this project
+### ⭐ If you like this project
 
 Give it a ⭐ on GitHub!
